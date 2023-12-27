@@ -45,7 +45,7 @@ allOpen {
     annotations(
         "jakarta.persistence.Entity",
         "jakarta.persistence.MappedSuperclass",
-        "javax.persistence.Embeddable"
+        "jakarta.persistence.Embeddable"
     )
 }
 
