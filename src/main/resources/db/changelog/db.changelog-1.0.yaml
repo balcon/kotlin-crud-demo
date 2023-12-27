@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: K. Balykov
+      changes:
+        - createSequence:
+            sequenceName: main_seq
+            incrementBy: 1
+            startValue: 100
+  - changeSet:
+      id: 1
+      author: K. Balykov
+      changes:
+        - createTable:
+            tableName: author
+            columns:
+              - column:
+                  name: id
+                  type: integer
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: author_pk
+              - column:
+                  name: name
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: country
+                  type: varchar
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 2
+      author: K. Balykov
+      changes:
+        - createTable:
+            tableName: book
+            columns:
+              - column:
+                  name: id
+                  type: integer
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: book_pk
+              - column:
+                  name: title
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: writing_year
+                  type: integer
+                  constraints:
+                    nullable: true
+              - column:
+                  name: author_id
+                  type: integer
+                  constraints:
+                    foreignKeyName: book_author_fk
+                    referencedTableName: author
+                    referencedColumnNames: id
+                    deleteCascade: true
