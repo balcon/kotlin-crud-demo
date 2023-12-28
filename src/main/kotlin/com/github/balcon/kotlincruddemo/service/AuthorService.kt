@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional
 private val logger = KotlinLogging.logger { }
 
 @Service
-@Transactional(readOnly = true)
 class AuthorService(
     private val repository: AuthorRepository,
     private val mapper: AuthorMapper,
@@ -37,7 +36,6 @@ class AuthorService(
             .map { mapper.toDto(it) }
     }
 
-    @Transactional
     fun create(authorDto: AuthorDto): AuthorDto {
         logger.info { "AuthorService#create($authorDto)" }
         return mapper.toEntity(authorDto)
