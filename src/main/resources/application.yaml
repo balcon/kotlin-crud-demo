@@ -1,19 +1,28 @@
 spring:
+  profiles.default: dev
+  application:
+    name: kotlin-crud-demo
+  jpa.open-in-view: false
+server.port: 8080
+
+---
+spring:
+  config.activate.on-profile: dev
   datasource:
     url: jdbc:postgresql://localhost:5436/postgres
     username: postgres
     password: postgres
+
+---
+spring:
+  config.activate.on-profile: test
   jpa:
     show-sql: true
-    hibernate:
-      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
         highlight_sql: true
-    open-in-view: false
   output.ansi.enabled: always
-
 logging:
   level:
     liquibase.executor: debug

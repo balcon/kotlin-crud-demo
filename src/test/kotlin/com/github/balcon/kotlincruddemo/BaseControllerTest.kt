@@ -5,19 +5,19 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.transaction.annotation.Transactional
 import org.testcontainers.containers.PostgreSQLContainer
 
 @SpringBootTest
+@ActiveProfiles("test")
 @Transactional
 @AutoConfigureMockMvc
 @Sql("classpath:data.sql")
-//@Testcontainers
 abstract class BaseControllerTest {
     companion object {
-        //@Container
         @ServiceConnection
         val container = PostgreSQLContainer("postgres:16:1")
     }

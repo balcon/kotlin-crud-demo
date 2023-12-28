@@ -2,15 +2,15 @@ package com.github.balcon.kotlincruddemo.service
 
 import com.github.balcon.kotlincruddemo.dto.AuthorDto
 import com.github.balcon.kotlincruddemo.dto.mapper.AuthorMapper
-import com.github.balcon.kotlincruddemo.exception.ResourceNotExistsException
 import com.github.balcon.kotlincruddemo.repository.AuthorRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 /** Тест KDoc
  *
- *  Класс обслуживает запросы от [com.github.balcon.kotlincruddemo.web.AuthorController] к [AuthorRepository].
+ *  Класс обслуживает запросы от [com.github.balcon.kotlincruddemo.controller.AuthorController] к [AuthorRepository].
  *
  * @author К. Балыков
  */
@@ -18,52 +18,50 @@ import org.springframework.transaction.annotation.Transactional
 private val logger = KotlinLogging.logger { }
 
 @Service
-@Transactional(readOnly = true)
 class AuthorService(
-    private val repository: AuthorRepository,
-    private val mapper: AuthorMapper,
+    private val authorRepository: AuthorRepository,
+    private val authorMapper: AuthorMapper,
 ) {
     fun getById(id: Int): AuthorDto {
         logger.info { "AuthorService#getById($id)" }
-        return repository.findAuthorWithBooksById(id)
+        return authorRepository.findAuthorWithBooksById(id)
             ?.let {
-                mapper.toDtoWithBooks(it)
-            } ?: throw ResourceNotExistsException("Author", id)
+                authorMapper.toDtoWithBooks(it)
+            } ?: throw EntityNotFoundException("Author id: $id")
     }
 
     fun getAll(): List<AuthorDto> {
         logger.info { "AuthorService#getAll()" }
-        return repository.findAll()
-            .map { mapper.toDto(it) }
+        return authorRepository.findAll()
+            .map { authorMapper.toDto(it) }
     }
 
     @Transactional
     fun create(authorDto: AuthorDto): AuthorDto {
         logger.info { "AuthorService#create($authorDto)" }
-        return mapper.toEntity(authorDto)
+        return authorMapper.toEntity(authorDto)
             .let {
-                mapper.toDto(repository.saveAndFlush(it))
+                authorMapper.toDto(authorRepository.save(it))
             }
     }
 
     @Transactional
     fun update(id: Int, authorDto: AuthorDto): AuthorDto {
         logger.info { "AuthorService#update($id, $authorDto)" }
-        return repository.findAuthorById(id)
+        return authorRepository.findAuthorById(id)
             ?.let {
                 it.name = authorDto.name
                 it.country = authorDto.country
-                mapper.toDto(repository.saveAndFlush(it))
-            } ?: throw ResourceNotExistsException("Author", id)
+                authorMapper.toDto(authorRepository.save(it))
+            } ?: throw EntityNotFoundException("Author id: $id")
     }
 
     @Transactional
     fun deleteById(id: Int) {
         logger.info { "AuthorService#delete($id)" }
-        repository.findAuthorById(id)
+        authorRepository.findAuthorById(id)
             ?.let {
-                repository.delete(it)
-            } ?: throw ResourceNotExistsException("Author", id)
-        repository.flush()
+                authorRepository.delete(it)
+            } ?: throw EntityNotFoundException("Author id: $id")
     }
 }

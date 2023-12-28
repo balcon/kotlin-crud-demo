@@ -1,4 +1,4 @@
-package com.github.balcon.kotlincruddemo.web
+package com.github.balcon.kotlincruddemo.controller
 
 import com.github.balcon.kotlincruddemo.dto.BookDto
 import com.github.balcon.kotlincruddemo.service.BookService
@@ -8,29 +8,27 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 class BookController(
-    private val service: BookService,
+    private val bookService: BookService,
 ) {
     @GetMapping("/books")
-    fun getAll() = service.getAll()
+    fun getAll() = bookService.getAll()
 
     @GetMapping("/books/{id}")
-    fun getById(@PathVariable id: Int) = service.getById(id)
+    fun getById(@PathVariable id: Int) = bookService.getById(id)
 
     @GetMapping("/authors/{authorId}/books")
-    fun getByAuthor(@PathVariable authorId: Int) = service.getByAuthor(authorId)
-
+    fun getByAuthor(@PathVariable authorId: Int) = bookService.getByAuthor(authorId)
 
     @PostMapping("/authors/{authorId}/books")
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@Validated @RequestBody bookDto: BookDto, @PathVariable authorId: Int) =
-        service.create(bookDto, authorId)
+        bookService.create(bookDto, authorId)
 
     @PutMapping("/books/{id}")
     fun update(@PathVariable id: Int, @Validated @RequestBody bookDto: BookDto) =
-        service.update(id, bookDto)
-
+        bookService.update(id, bookDto)
 
     @DeleteMapping("/books/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun delete(@PathVariable id: Int) = service.deleteById(id)
+    fun delete(@PathVariable id: Int) = bookService.deleteById(id)
 }
