@@ -3,6 +3,7 @@ package com.github.balcon.kotlincruddemo.controller
 import com.github.balcon.kotlincruddemo.dto.BookDto
 import com.github.balcon.kotlincruddemo.service.BookService
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
@@ -11,24 +12,28 @@ class BookController(
     private val bookService: BookService,
 ) {
     @GetMapping("/books")
-    fun getAll() = bookService.getAll()
+    // Непонятно, зачем собирать ResponseEntity руками,
+    // если контроллер может сделать это сам? ¯\_(ツ)_/¯
+    fun getAll() =
+        ResponseEntity(bookService.getAll(), HttpStatus.OK)
 
     @GetMapping("/books/{id}")
-    fun getById(@PathVariable id: Int) = bookService.getById(id)
+    fun getById(@PathVariable id: Int) =
+        ResponseEntity(bookService.getById(id), HttpStatus.OK)
 
     @GetMapping("/authors/{authorId}/books")
-    fun getByAuthor(@PathVariable authorId: Int) = bookService.getByAuthor(authorId)
+    fun getByAuthor(@PathVariable authorId: Int) =
+        ResponseEntity(bookService.getByAuthor(authorId), HttpStatus.OK)
 
     @PostMapping("/authors/{authorId}/books")
-    @ResponseStatus(HttpStatus.CREATED)
     fun create(@Validated @RequestBody bookDto: BookDto, @PathVariable authorId: Int) =
-        bookService.create(bookDto, authorId)
+        ResponseEntity(bookService.create(bookDto, authorId), HttpStatus.CREATED)
 
     @PutMapping("/books/{id}")
     fun update(@PathVariable id: Int, @Validated @RequestBody bookDto: BookDto) =
-        bookService.update(id, bookDto)
+        ResponseEntity(bookService.update(id, bookDto), HttpStatus.NO_CONTENT)
 
     @DeleteMapping("/books/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun delete(@PathVariable id: Int) = bookService.deleteById(id)
+    fun delete(@PathVariable id: Int) =
+        ResponseEntity(bookService.deleteById(id), HttpStatus.NO_CONTENT)
 }

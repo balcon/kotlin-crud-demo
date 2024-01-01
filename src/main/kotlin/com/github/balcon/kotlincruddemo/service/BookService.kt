@@ -47,11 +47,11 @@ class BookService(
     }
 
     @Transactional
-    fun update(id: Int, bookDto: BookDto): BookDto {
+    fun update(id: Int, bookDto: BookDto) {
         bookRepository.findBookWithAuthorById(id)
             ?.let {
-                val updatedBook = bookMapper.toEntity(bookDto, it.author)
-                return bookMapper.toDtoWithAuthor(bookRepository.save(updatedBook))
+                it.title = bookDto.title
+                it.year = bookDto.year
             } ?: throw EntityNotFoundException("Book id: $id")
     }
 

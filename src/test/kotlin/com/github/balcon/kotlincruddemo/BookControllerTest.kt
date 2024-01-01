@@ -73,7 +73,7 @@ class BookControllerTest : BaseControllerTest() {
     }
 
     @Test
-    fun `Update by id, response updated json with 200 status`() {
+    fun `Update by id, response updated json with 204 status`() {
         val bookDto = BookDto(title = "New title")
         mockMvc.perform(
             put("/books/10")
@@ -81,7 +81,7 @@ class BookControllerTest : BaseControllerTest() {
                 .content(jsonMapper.writeValueAsString(bookDto))
         )
             .andDo(print())
-            .andExpect(status().isOk)
+            .andExpect(status().isNoContent)
     }
 
     @Test

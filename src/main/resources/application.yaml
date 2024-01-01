@@ -12,6 +12,9 @@ spring:
     url: jdbc:postgresql://localhost:5436/postgres
     username: postgres
     password: postgres
+  jpa:
+    show-sql: true
+  output.ansi.enabled: always
 
 ---
 spring:

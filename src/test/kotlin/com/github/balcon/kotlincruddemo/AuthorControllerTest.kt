@@ -55,7 +55,7 @@ class AuthorControllerTest : BaseControllerTest() {
     }
 
     @Test
-    fun `Update by id, response updated json with 200 status`() {
+    fun `Update by id, response updated json with 204 status`() {
         val authorDto = AuthorDto(name = "New author")
         mockMvc.perform(
             put("/authors/1")
@@ -63,7 +63,7 @@ class AuthorControllerTest : BaseControllerTest() {
                 .content(jsonMapper.writeValueAsString(authorDto))
         )
             .andDo(print())
-            .andExpect(status().isOk)
+            .andExpect(status().isNoContent)
     }
 
     @Test

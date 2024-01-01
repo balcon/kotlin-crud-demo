@@ -3,6 +3,7 @@ package com.github.balcon.kotlincruddemo.controller
 import com.github.balcon.kotlincruddemo.dto.*
 import com.github.balcon.kotlincruddemo.service.AuthorService
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.context.request.ServletWebRequest
@@ -13,20 +14,24 @@ class AuthorController(
     private val authorService: AuthorService,
 ) {
     @GetMapping
-    fun getAll() = authorService.getAll()
+    // Непонятно, зачем собирать ResponseEntity руками
+    // если контроллер может сделать это сам? ¯\_(ツ)_/¯
+    fun getAll() =
+        ResponseEntity(authorService.getAll(), HttpStatus.OK)
 
     @GetMapping("/{id}")
-    fun getAll(@PathVariable id: Int, request: ServletWebRequest) = authorService.getById(id)
+    fun getAll(@PathVariable id: Int, request: ServletWebRequest) =
+        ResponseEntity(authorService.getById(id), HttpStatus.OK)
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    fun create(@Validated @RequestBody authorDto: AuthorDto) = authorService.create(authorDto)
+    fun create(@Validated @RequestBody authorDto: AuthorDto) =
+        ResponseEntity(authorService.create(authorDto), HttpStatus.CREATED)
 
     @PutMapping("/{id}")
     fun update(@PathVariable id: Int, @Validated @RequestBody authorDto: AuthorDto) =
-        authorService.update(id, authorDto)
+        ResponseEntity(authorService.update(id, authorDto), HttpStatus.NO_CONTENT)
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun delete(@PathVariable id: Int) = authorService.deleteById(id)
+    fun delete(@PathVariable id: Int) =
+        ResponseEntity(authorService.deleteById(id), HttpStatus.NO_CONTENT)
 }

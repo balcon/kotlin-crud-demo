@@ -46,13 +46,12 @@ class AuthorService(
     }
 
     @Transactional
-    fun update(id: Int, authorDto: AuthorDto): AuthorDto {
+    fun update(id: Int, authorDto: AuthorDto) {
         logger.info { "AuthorService#update($id, $authorDto)" }
-        return authorRepository.findAuthorById(id)
+        authorRepository.findAuthorById(id)
             ?.let {
                 it.name = authorDto.name
                 it.country = authorDto.country
-                authorMapper.toDto(authorRepository.save(it))
             } ?: throw EntityNotFoundException("Author id: $id")
     }
 

@@ -11,7 +11,7 @@ abstract class BaseEntity(
         initialValue = 100, allocationSize = 1
     )
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "main_seq")
-    var id: Int? = null
+    var id: Long? = null
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

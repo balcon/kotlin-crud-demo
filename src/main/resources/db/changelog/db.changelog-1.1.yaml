@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0
+      author: K. Balykov
+      changes:
+        - modifyDataType:
+            tableName: author
+            columnName: id
+            newDataType: bigint
+        - modifyDataType:
+            tableName: book
+            columnName: id
+            newDataType: bigint
+        - modifyDataType:
+            tableName: book
+            columnName: author_id
+            newDataType: bigint
+
