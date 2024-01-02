@@ -14,7 +14,6 @@ interface AuthorMapper {
     fun toDtoWithBooks(author: Author): AuthorWithBooksReadDto
 
     @Mapping(target = "id", ignore = true)
-    //                           Java, lol ↘
-    @Mapping(target = "books", expression = "java(new ArrayList<>())")
+    @Mapping(target = "books", ignore = true)
     fun toEntity(authorDto: AuthorWriteDto): Author
 }
