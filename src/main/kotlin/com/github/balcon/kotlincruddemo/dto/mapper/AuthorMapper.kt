@@ -1,33 +1,20 @@
 package com.github.balcon.kotlincruddemo.dto.mapper
 
-import com.github.balcon.kotlincruddemo.dto.AuthorDto
+import com.github.balcon.kotlincruddemo.dto.AuthorReadDto
+import com.github.balcon.kotlincruddemo.dto.AuthorWithBooksReadDto
+import com.github.balcon.kotlincruddemo.dto.AuthorWriteDto
 import com.github.balcon.kotlincruddemo.model.Author
-import org.springframework.stereotype.Component
+import org.mapstruct.Mapper
+import org.mapstruct.Mapping
 
-@Component
-class AuthorMapper(
-    private val bookMapper: BookMapper,
-) {
-    fun toDto(author: Author) =
-        AuthorDto(
-            id = author.id,
-            name = author.name,
-            country = author.country,
-            books = listOf()
-        )
+@Mapper
+interface AuthorMapper {
+    fun toDto(author: Author): AuthorReadDto
 
-    fun toDtoWithBooks(author: Author) =
-        AuthorDto(
-            id = author.id,
-            name = author.name,
-            country = author.country,
-            books = author.books.map {
-                bookMapper.toDto(it)
-            })
+    fun toDtoWithBooks(author: Author): AuthorWithBooksReadDto
 
-    fun toEntity(authorDto: AuthorDto) =
-        Author(
-            name = authorDto.name,
-            country = authorDto.country
-        )
+    @Mapping(target = "id", ignore = true)
+    //                           Java, lol ↘
+    @Mapping(target = "books", expression = "java(new ArrayList<>())")
+    fun toEntity(authorDto: AuthorWriteDto): Author
 }

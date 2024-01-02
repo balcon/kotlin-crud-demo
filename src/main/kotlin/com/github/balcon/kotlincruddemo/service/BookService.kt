@@ -1,6 +1,7 @@
 package com.github.balcon.kotlincruddemo.service
 
-import com.github.balcon.kotlincruddemo.dto.BookDto
+import com.github.balcon.kotlincruddemo.dto.BookWithAuthorReadDto
+import com.github.balcon.kotlincruddemo.dto.BookWriteDto
 import com.github.balcon.kotlincruddemo.dto.mapper.BookMapper
 import com.github.balcon.kotlincruddemo.repository.AuthorRepository
 import com.github.balcon.kotlincruddemo.repository.BookRepository
@@ -12,51 +13,51 @@ import org.springframework.transaction.annotation.Transactional
 class BookService(
     private val bookRepository: BookRepository,
     private val authorRepository: AuthorRepository,
-    private val bookMapper: BookMapper,
-
-    ) {
-    fun getById(id: Int): BookDto {
-        return bookRepository.findBookWithAuthorById(id)
+    private val bookMapper: BookMapper
+) {
+    fun getById(id: Long) =
+        bookRepository.findBookWithAuthorById(id)
             ?.let {
                 bookMapper.toDtoWithAuthor(it)
             } ?: throw EntityNotFoundException("Book id: $id")
-    }
 
-    fun getAll(): List<BookDto> {
-        return bookRepository.findAll()
+    fun getAll() =
+        bookRepository.findAll()
             .map {
                 bookMapper.toDtoWithAuthor(it)
             }
-    }
 
-    fun getByAuthor(authorId: Int): List<BookDto> {
-        return bookRepository.findBookByAuthorId(authorId)
+    fun getByAuthor(authorId: Long) =
+        bookRepository.findBookByAuthorId(authorId)
             .map {
                 bookMapper.toDto(it)
             }
-    }
 
     @Transactional
-    fun create(bookDto: BookDto, authorId: Int): BookDto {
-        val author = authorRepository.findAuthorById(authorId)
-            ?: throw EntityNotFoundException("Author id: $authorId")
-        return bookMapper.toEntity(bookDto, author)
+    fun create(bookDto: BookWriteDto): BookWithAuthorReadDto =
+        bookMapper.toEntity(bookDto, getAuthor(bookDto.authorId))
             .let {
-                bookMapper.toDtoWithAuthor(bookRepository.save(it))
+                bookMapper.toDtoWithAuthor(it)
             }
-    }
 
     @Transactional
-    fun update(id: Int, bookDto: BookDto) {
-        bookRepository.findBookWithAuthorById(id)
-            ?.let {
-                it.title = bookDto.title
-                it.year = bookDto.year
+    fun update(id: Long, bookDto: BookWriteDto) {
+        bookRepository.findBookById(id)
+            ?.apply {
+                title = bookDto.title
+                year = bookDto.year
+                if (author.id != bookDto.authorId) {
+                    author = getAuthor(bookDto.authorId)
+                }
             } ?: throw EntityNotFoundException("Book id: $id")
     }
 
+    private fun getAuthor(id: Long) =
+        authorRepository.findAuthorById(id)
+            ?: throw EntityNotFoundException("Author id: $id")
+
     @Transactional
-    fun deleteById(id: Int) {
+    fun deleteById(id: Long) {
         bookRepository.findBookById(id)
             ?.let {
                 bookRepository.delete(it)

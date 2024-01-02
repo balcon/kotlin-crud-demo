@@ -1,13 +1,18 @@
 package com.github.balcon.kotlincruddemo
 
-import com.github.balcon.kotlincruddemo.dto.AuthorDto
+import com.github.balcon.kotlincruddemo.dto.AuthorWriteDto
+import com.github.balcon.kotlincruddemo.repository.AuthorRepository
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class AuthorControllerTest : BaseControllerTest() {
+    @Autowired
+    private lateinit var authorRepository: AuthorRepository
+
     @Test
     fun `Get all, response json list with 200 status`() {
         mockMvc.perform(get("/authors"))
@@ -31,8 +36,7 @@ class AuthorControllerTest : BaseControllerTest() {
 
     @Test
     fun `Create, response json with 201 status`() {
-        // [id = 10] ignored
-        val authorDto = AuthorDto(id = 10, name = "New author")
+        val authorDto = AuthorWriteDto(name = "New author")
         mockMvc.perform(
             post("/authors")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -40,11 +44,12 @@ class AuthorControllerTest : BaseControllerTest() {
         )
             .andDo(print())
             .andExpect(status().isCreated)
+        authorRepository.flush()
     }
 
     @Test
     fun `Create, validation error, response 400 status`() {
-        val authorDto = AuthorDto(name = "")
+        val authorDto = AuthorWriteDto(name = "")
         mockMvc.perform(
             post("/authors")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -55,8 +60,8 @@ class AuthorControllerTest : BaseControllerTest() {
     }
 
     @Test
-    fun `Update by id, response updated json with 204 status`() {
-        val authorDto = AuthorDto(name = "New author")
+    fun `Update, response updated json with 204 status`() {
+        val authorDto = AuthorWriteDto(name = "New author")
         mockMvc.perform(
             put("/authors/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -64,11 +69,12 @@ class AuthorControllerTest : BaseControllerTest() {
         )
             .andDo(print())
             .andExpect(status().isNoContent)
+        authorRepository.flush()
     }
 
     @Test
-    fun `Update by id, not exists, response 404 status`() {
-        val authorDto = AuthorDto(name = "New author")
+    fun `Update, not exists, response 404 status`() {
+        val authorDto = AuthorWriteDto(name = "New author")
         mockMvc.perform(
             put("/authors/0")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,14 +85,27 @@ class AuthorControllerTest : BaseControllerTest() {
     }
 
     @Test
-    fun `Delete by id, success, response 204 status`() {
-        mockMvc.perform(delete("/authors/1"))
+    fun `Update, validation error, response 400 status`() {
+        val authorDto = AuthorWriteDto(name = "")
+        mockMvc.perform(
+            put("/authors/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonMapper.writeValueAsString(authorDto))
+        )
             .andDo(print())
-            .andExpect(status().isNoContent)
+            .andExpect(status().isBadRequest)
     }
 
     @Test
-    fun `Delete by id, not exists, response 404 status`() {
+    fun `Delete, success, response 204 status`() {
+        mockMvc.perform(delete("/authors/1"))
+            .andDo(print())
+            .andExpect(status().isNoContent)
+        authorRepository.flush()
+    }
+
+    @Test
+    fun `Delete, not exists, response 404 status`() {
         mockMvc.perform(delete("/authors/0"))
             .andDo(print())
             .andExpect(status().isNotFound)

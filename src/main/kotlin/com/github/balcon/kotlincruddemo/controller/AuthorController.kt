@@ -20,18 +20,18 @@ class AuthorController(
         ResponseEntity(authorService.getAll(), HttpStatus.OK)
 
     @GetMapping("/{id}")
-    fun getAll(@PathVariable id: Int, request: ServletWebRequest) =
+    fun getAll(@PathVariable id: Long, request: ServletWebRequest) =
         ResponseEntity(authorService.getById(id), HttpStatus.OK)
 
     @PostMapping
-    fun create(@Validated @RequestBody authorDto: AuthorDto) =
+    fun create(@Validated @RequestBody authorDto: AuthorWriteDto) =
         ResponseEntity(authorService.create(authorDto), HttpStatus.CREATED)
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: Int, @Validated @RequestBody authorDto: AuthorDto) =
+    fun update(@PathVariable id: Long, @Validated @RequestBody authorDto: AuthorWriteDto) =
         ResponseEntity(authorService.update(id, authorDto), HttpStatus.NO_CONTENT)
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: Int) =
+    fun delete(@PathVariable id: Long) =
         ResponseEntity(authorService.deleteById(id), HttpStatus.NO_CONTENT)
 }

@@ -13,14 +13,13 @@ private val logger = KotlinLogging.logger { }
 @RestControllerAdvice
 class ControllerAdvice {
     @ExceptionHandler
-    fun handleRuntimeException(exception: EntityNotFoundException): ResponseEntity<String> {
-        return exception.message
+    fun handleRuntimeException(exception: EntityNotFoundException) =
+        exception.message
             ?.let {
                 val message = "Entity not found ($it)"
                 logger.error { message }
                 ResponseEntity(message, HttpStatus.NOT_FOUND)
             } ?: ResponseEntity.notFound().build()
-    }
 
     @ExceptionHandler
     fun handleValidationException(exception: BindException): ResponseEntity<String> {
@@ -30,7 +29,7 @@ class ControllerAdvice {
 
     @ExceptionHandler
     fun handleException(exception: Exception): ResponseEntity<String> {
-        logger.error { exception.toString() }
+        logger.error { exception.stackTrace }
         return ResponseEntity(exception.toString(), HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

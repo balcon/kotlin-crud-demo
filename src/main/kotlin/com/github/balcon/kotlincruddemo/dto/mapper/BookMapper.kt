@@ -1,36 +1,19 @@
 package com.github.balcon.kotlincruddemo.dto.mapper
 
-import com.github.balcon.kotlincruddemo.dto.BookDto
+import com.github.balcon.kotlincruddemo.dto.BookReadDto
+import com.github.balcon.kotlincruddemo.dto.BookWithAuthorReadDto
+import com.github.balcon.kotlincruddemo.dto.BookWriteDto
 import com.github.balcon.kotlincruddemo.model.Author
 import com.github.balcon.kotlincruddemo.model.Book
-import org.springframework.context.annotation.Lazy
-import org.springframework.stereotype.Component
+import org.mapstruct.Mapper
+import org.mapstruct.Mapping
 
-@Component
-class BookMapper(
-    @Lazy
-    private val authorMapper: AuthorMapper
-) {
-    fun toDto(book: Book) =
-        BookDto(
-            id = book.id,
-            title = book.title,
-            year = book.year,
-            author = null
-        )
+@Mapper
+interface BookMapper {
+    fun toDto(book: Book): BookReadDto
 
-    fun toDtoWithAuthor(book: Book) =
-        BookDto(
-            id = book.id,
-            title = book.title,
-            year = book.year,
-            author = authorMapper.toDto(book.author)
-        )
+    fun toDtoWithAuthor(book: Book): BookWithAuthorReadDto
 
-    fun toEntity(bookDto: BookDto, author: Author) =
-        Book(
-            title = bookDto.title,
-            year = bookDto.year,
-            author = author
-        )
+    @Mapping(target = "id", ignore = true)
+    fun toEntity(bookDto: BookWriteDto, author: Author): Book
 }

@@ -10,7 +10,7 @@ class Book(
     var title: String,
 
     @Column(name = "writing_year")
-    var year: Int? = 0,
+    var year: Int?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     var author: Author

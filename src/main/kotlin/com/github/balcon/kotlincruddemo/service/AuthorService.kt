@@ -1,6 +1,8 @@
 package com.github.balcon.kotlincruddemo.service
 
-import com.github.balcon.kotlincruddemo.dto.AuthorDto
+import com.github.balcon.kotlincruddemo.dto.AuthorReadDto
+import com.github.balcon.kotlincruddemo.dto.AuthorWithBooksReadDto
+import com.github.balcon.kotlincruddemo.dto.AuthorWriteDto
 import com.github.balcon.kotlincruddemo.dto.mapper.AuthorMapper
 import com.github.balcon.kotlincruddemo.repository.AuthorRepository
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -20,9 +22,9 @@ private val logger = KotlinLogging.logger { }
 @Service
 class AuthorService(
     private val authorRepository: AuthorRepository,
-    private val authorMapper: AuthorMapper,
+    private val authorMapper: AuthorMapper
 ) {
-    fun getById(id: Int): AuthorDto {
+    fun getById(id: Long): AuthorWithBooksReadDto {
         logger.info { "AuthorService#getById($id)" }
         return authorRepository.findAuthorWithBooksById(id)
             ?.let {
@@ -30,33 +32,35 @@ class AuthorService(
             } ?: throw EntityNotFoundException("Author id: $id")
     }
 
-    fun getAll(): List<AuthorDto> {
+    fun getAll(): List<AuthorReadDto> {
         logger.info { "AuthorService#getAll()" }
         return authorRepository.findAll()
-            .map { authorMapper.toDto(it) }
-    }
-
-    @Transactional
-    fun create(authorDto: AuthorDto): AuthorDto {
-        logger.info { "AuthorService#create($authorDto)" }
-        return authorMapper.toEntity(authorDto)
-            .let {
-                authorMapper.toDto(authorRepository.save(it))
+            .map {
+                authorMapper.toDto(it)
             }
     }
 
     @Transactional
-    fun update(id: Int, authorDto: AuthorDto) {
+    fun create(authorDto: AuthorWriteDto): AuthorReadDto {
+        logger.info { "AuthorService#create($authorDto)" }
+        with(authorMapper) {
+            return toDto(authorRepository.save(toEntity(authorDto)))
+        }
+
+    }
+
+    @Transactional
+    fun update(id: Long, authorDto: AuthorWriteDto) {
         logger.info { "AuthorService#update($id, $authorDto)" }
         authorRepository.findAuthorById(id)
-            ?.let {
-                it.name = authorDto.name
-                it.country = authorDto.country
+            ?.apply {
+                name = authorDto.name
+                country = authorDto.country
             } ?: throw EntityNotFoundException("Author id: $id")
     }
 
     @Transactional
-    fun deleteById(id: Int) {
+    fun deleteById(id: Long) {
         logger.info { "AuthorService#delete($id)" }
         authorRepository.findAuthorById(id)
             ?.let {

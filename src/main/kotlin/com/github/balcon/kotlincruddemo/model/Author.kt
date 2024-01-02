@@ -8,10 +8,10 @@ import jakarta.persistence.OneToMany
 class Author(
     var name: String,
 
-    var country: String? = null,
+    var country: String?,
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
-    val books: MutableList<Book> = ArrayList()
+    var books: MutableList<Book> = mutableListOf()
 ) : BaseEntity() {
     override fun toString() = "Author(id = '$id', name='$name', country = '$country'"
 }
