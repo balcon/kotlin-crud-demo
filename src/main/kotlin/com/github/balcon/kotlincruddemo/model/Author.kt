@@ -1,10 +1,9 @@
 package com.github.balcon.kotlincruddemo.model
 
-import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.OneToMany
+import jakarta.persistence.*
 
 @Entity
+@NamedEntityGraph(name = "withBooks", attributeNodes = [NamedAttributeNode("books")])
 class Author(
     var name: String,
 

@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface AuthorRepository : JpaRepository<Author, Long> {
-    @EntityGraph(attributePaths = ["books"])
+    @EntityGraph("withBooks")
     fun findAuthorWithBooksById(id: Long): Author?
 
     fun findAuthorById(id: Long): Author?
